@@ -1,0 +1,15 @@
+/**
+ * init environment
+ * @return
+ */
+def initProjects() {
+    def properties = new Properties()
+    def localProperties = new File(rootDir, 'local.properties')
+    properties.load(localProperties.newDataInputStream())
+    gradle.ext.sdkDir = properties.getProperty('sdk.dir')
+    gradle.ext.ndkDir = properties.getProperty('ndk.dir')
+}
+
+initProjects()
+
+include ':app'

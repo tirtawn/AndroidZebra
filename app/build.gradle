@@ -1,0 +1,73 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+
+    defaultConfig {
+        applicationId "com.shurik.droidzebra"
+        minSdkVersion 8
+        targetSdkVersion 23
+
+        testApplicationId "com.shurik.droidzebra.tests"
+        testInstrumentationRunner "android.test.InstrumentationTestRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    sourceSets {
+        main {
+            jni.srcDirs = []
+        }
+    }
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:23.4.0'
+}
+
+
+tasks.withType(JavaCompile) {
+    compileTask -> compileTask.dependsOn ndkBuild
+}
+
+/**
+ * compile
+ */
+task ndkBuild(type: Exec) {
+    def commands = [
+            getNdkBuildCmd(),
+            '-j', Runtime.runtime.availableProcessors(),
+            '-C', './src/main/jni',
+            "NDK_OUT=${temporaryDir}",
+            "NDK_LIBS_OUT=${file('src/main/jniLibs/').absolutePath}",
+            'APP_ABI=armeabi armeabi-v7a x86'
+    ]
+    commandLine commands
+}
+
+/**
+ * get ndk-build command
+ * @return
+ */
+def getNdkBuildCmd() {
+    def ndkCmd = 'ndk-build'
+    if (project.gradle.ndkDir != null) {
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            ndkCmd = "ndk-build.cmd"
+        }
+        ndkCmd = "${project.gradle.ndkDir}${File.separator}${ndkCmd}"
+    }
+    return ndkCmd;
+}
