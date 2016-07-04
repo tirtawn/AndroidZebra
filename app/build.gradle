@@ -10,9 +10,8 @@ android {
         applicationId "com.shurik.droidzebra"
         minSdkVersion 8
         targetSdkVersion 23
-
-        testApplicationId "com.shurik.droidzebra.tests"
-        testInstrumentationRunner "android.test.InstrumentationTestRunner"
+        versionCode 17
+        versionName '1.5.3'
     }
 
     buildTypes {
@@ -46,6 +45,7 @@ tasks.withType(JavaCompile) {
  * compile
  */
 task ndkBuild(type: Exec) {
+    println('setting the ndk-build command, please set the ndk path!')
     def commands = [
             getNdkBuildCmd(),
             '-j', Runtime.runtime.availableProcessors(),

@@ -32,6 +32,17 @@ and play the game.
 - Change to android studio project
 - Add Chinese translation
 
+### Tips
+
+- Import the project
+- Select the NDK path [Open module settings -> Android NDK location] 
+- If you do not want to compile jni code, comment the code :
+``` comment
+//tasks.withType(JavaCompile) {
+//    compileTask -> compileTask.dependsOn ndkBuild
+//}
+```
+
 ### Current features:
 
 - Zebra engine
