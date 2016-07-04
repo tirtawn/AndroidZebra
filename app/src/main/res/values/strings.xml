@@ -75,4 +75,9 @@
     <string name="mail_move">Move sequence:</string>
     <string name="mail_url">Game URL:</string>
     <string name="mail_viewer_url">http://droidzebra.appspot.com/viewer/?</string>
+
+    <string name="settings_ui_language_key" translatable="false">settings_ui_language</string>
+    <string name="settings_ui_language_default_value" translatable="false">en_US</string>
+    <string name="settings_ui_language_title" translatable="false">Language</string>
+    <string name="settings_ui_language_summary" translatable="false">Current language: %s</string>
 </resources>

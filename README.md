@@ -1,5 +1,5 @@
 # AndroidZebra
-an Android zebra game
+DroidZebra Reversi for Android
 
 ### This is based on original game:
 https://f-droid.org/repository/browse/?fdfilter=zebra&fdid=com.shurik.droidzebra
@@ -31,6 +31,7 @@ and play the game.
 
 - Change to android studio project
 - Add Chinese translation
+- Add language setting(will take full effect after a restart)
 
 ### Tips
 

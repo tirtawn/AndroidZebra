@@ -55,7 +55,6 @@ import java.util.Date;
 
 public class DroidZebra extends FragmentActivity
         implements SharedPreferences.OnSharedPreferenceChangeListener {
-    public static final String SHARED_PREFS_NAME = "droidzebrasettings";
 
     final public static int boardSize = 8;
 
@@ -502,6 +501,8 @@ public class DroidZebra extends FragmentActivity
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        CommonUtils.updateLanguageLocal(this);
+
         setContentView(R.layout.spash_layout);
         if (android.os.Build.VERSION.SDK_INT >= 11) {
             new ActionBarHelper().hide();
@@ -512,7 +513,7 @@ public class DroidZebra extends FragmentActivity
         mZebraThread = new ZebraEngine(this, mDroidZebraHandler);
 
         // preferences
-        mSettings = getSharedPreferences(SHARED_PREFS_NAME, 0);
+        mSettings = getSharedPreferences(Constants.SHARED_PREFS_NAME, 0);
         mSettings.registerOnSharedPreferenceChangeListener(this);
 
         if (savedInstanceState != null
@@ -563,7 +564,7 @@ public class DroidZebra extends FragmentActivity
         boolean settingZebraPracticeMode;
         boolean settingZebraUseBook;
 
-        SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
+        SharedPreferences settings = getSharedPreferences(Constants.SHARED_PREFS_NAME, 0);
 
         settingsFunction = Integer.parseInt(settings.getString(SETTINGS_KEY_FUNCTION, String.format("%d", DEFAULT_SETTING_FUNCTION)));
         String[] strength = settings.getString(SETTINGS_KEY_STRENGTH, DEFAULT_SETTING_STRENGTH).split("\\|");
@@ -693,7 +694,7 @@ public class DroidZebra extends FragmentActivity
         StringBuffer sbBlackPlayer = new StringBuffer();
         StringBuffer sbWhitePlayer = new StringBuffer();
         ZebraEngine.GameState gs = mZebraThread.getGameState();
-        SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
+        SharedPreferences settings = getSharedPreferences(Constants.SHARED_PREFS_NAME, 0);
         byte[] moves = null;
         if (gs != null) {
             moves = gs.mMoveSequence;
@@ -810,7 +811,7 @@ public class DroidZebra extends FragmentActivity
             newFunction = FUNCTION_ZEBRA_WHITE;
 
         if (newFunction > 0) {
-            SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
+            SharedPreferences settings = getSharedPreferences(Constants.SHARED_PREFS_NAME, 0);
             SharedPreferences.Editor editor = settings.edit();
             editor.putString(SETTINGS_KEY_FUNCTION, String.format("%d", newFunction));
             editor.commit();
@@ -1169,7 +1170,7 @@ public class DroidZebra extends FragmentActivity
     }
 
 	/* requires api level 5 
-	@Override
+    @Override
 	public void onBackPressed() {
 		try {
 			mZebraThread.undoMove();

@@ -36,9 +36,11 @@ dependencies {
     compile 'com.android.support:support-v4:23.4.0'
 }
 
-
+/**
+ * uncommon this and set ndk path if you want to compile ndk
+ */
 tasks.withType(JavaCompile) {
-    compileTask -> compileTask.dependsOn ndkBuild
+//    compileTask -> compileTask.dependsOn ndkBuild
 }
 
 /**
