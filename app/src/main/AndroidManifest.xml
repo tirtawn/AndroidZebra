@@ -27,7 +27,7 @@
             android:name=".SettingsPreferences"
             android:allowTaskReparenting="false"
             android:label="@string/settings_title"
-            android:launchMode="standard"
+            android:launchMode="singleTask"
             android:multiprocess="false"
             android:noHistory="false"
             android:screenOrientation="portrait"

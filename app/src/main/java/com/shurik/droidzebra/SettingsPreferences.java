@@ -17,7 +17,6 @@
 
 package com.shurik.droidzebra;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
@@ -50,13 +49,10 @@ public class SettingsPreferences extends PreferenceActivity
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(getString(R.string.settings_ui_language_key))) {
-            String value = sharedPreferences.getString(key,
-                    getString(R.string.settings_ui_language_default_value));
+            String defalutLanguage = CommonUtils.getDefaultLanguageLocal(this);
+            String value = sharedPreferences.getString(key, defalutLanguage);
             CommonUtils.setLanguageLocale(this, value);
-            finish();
-            startActivity(new Intent(this, SettingsPreferences.class));
+            onCreate(null);
         }
     }
-
-
 }

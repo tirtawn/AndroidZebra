@@ -9,7 +9,7 @@
         <item>Chinese</item>
     </string-array>
     <string-array name="setting_language_codes" translatable="false">
-        <item>en_US</item>
+        <item>en</item>
         <item>fr</item>
         <item>ja</item>
         <item>ko</item>

@@ -62,7 +62,7 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_ui_preferences">
         <ListPreference
-            android:defaultValue="@string/settings_ui_language_default_value"
+            android:defaultValue="en"
             android:entries="@array/setting_language_names"
             android:entryValues="@array/setting_language_codes"
             android:key="@string/settings_ui_language_key"
