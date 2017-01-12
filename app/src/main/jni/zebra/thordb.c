@@ -32,7 +32,7 @@
 
 
 
-#include "thorop.c"
+#include "thorop.h"
 
 
 

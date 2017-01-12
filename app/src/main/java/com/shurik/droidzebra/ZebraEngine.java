@@ -38,26 +38,13 @@ import java.io.OutputStream;
 public class ZebraEngine extends Thread {
 
     static public final int BOARD_SIZE = 8;
-
-    static public String PATTERNS_FILE = "coeffs2.bin";
-    static public String BOOK_FILE = "book.bin";
-    static public String BOOK_FILE_COMPRESSED = "book.cmp.z";
-
     // board colors
     static public final byte PLAYER_BLACK = 0;
     static public final byte PLAYER_EMPTY = 1; // for board color
     static public final byte PLAYER_WHITE = 2;
-
     static public final int PLAYER_ZEBRA = 1; // for zebra skill in PlayerInfo
-
     // default parameters
     static public final int INFINIT_TIME = 10000000;
-
-    static private int SELFPLAY_MOVE_DELAY = 500; // ms
-    private int mMoveDelay = 0;
-    private long mMoveStartTime = 0; //ms
-    private int mMovesWithoutInput = 0;
-
     // messages
     static public final int
             MSG_ERROR = 0,
@@ -75,7 +62,6 @@ public class ZebraEngine extends Thread {
             MSG_PV = 12,
             MSG_CANDIDATE_EVALS = 13,
             MSG_DEBUG = 65535;
-
     // engine state
     static public final int
             ES_INITIAL = 0,
@@ -83,122 +69,41 @@ public class ZebraEngine extends Thread {
             ES_PLAY = 2,
             ES_PLAYINPROGRESS = 3,
             ES_USER_INPUT_WAIT = 4;
-
     static public final int
             UI_EVENT_EXIT = 0,
             UI_EVENT_MOVE = 1,
             UI_EVENT_UNDO = 2,
             UI_EVENT_SETTINGS_CHANGE = 3,
             UI_EVENT_REDO = 4;
-
     private static final String[] coeffAssets = {"coeffs2.bin"};
     private static final String[] bookCompressedAssets = {"book.cmp.z",};
+    // synchronization
+    static private final Object mJNILock = new Object();
+    static public String PATTERNS_FILE = "coeffs2.bin";
+    static public String BOOK_FILE = "book.bin";
+    static public String BOOK_FILE_COMPRESSED = "book.cmp.z";
+    static private int SELFPLAY_MOVE_DELAY = 500; // ms
 
-    // player info
-    public static class PlayerInfo {
-        public PlayerInfo(int _player, int _skill, int _exact_skill, int _wld_skill, int _player_time, int _increment) {
-            assert (_player == PLAYER_BLACK || _player == PLAYER_WHITE || _player == PLAYER_ZEBRA);
-            playerColor = _player;
-            skill = _skill;
-            exactSolvingSkill = _exact_skill;
-            wldSolvingSkill = _wld_skill;
-            playerTime = _player_time;
-            playerTimeIncrement = _increment;
-
-        }
-
-        public int playerColor;
-        public int skill;
-        public int exactSolvingSkill;
-        public int wldSolvingSkill;
-        public int playerTime;
-        public int playerTimeIncrement;
+    static {
+        System.loadLibrary("droidzebra");
     }
+
+    private int mMoveDelay = 0;
+    private long mMoveStartTime = 0; //ms
 
     ;
-
-    public static class InvalidMove extends Exception {
-        private static final long serialVersionUID = 8970579827351672330L;
-    }
-
-    ;
-
-    // Zebra move representation
-    public static class Move {
-        public static int PASS = -1;
-        public int mMove;
-
-        public Move(int move) {
-            set(move);
-        }
-
-        public Move(int x, int y) {
-            set(x, y);
-        }
-
-        public void set(int move) {
-            mMove = move;
-        }
-
-        public void set(int x, int y) {
-            mMove = (x + 1) * 10 + y + 1;
-        }
-
-        public int getY() {
-            return mMove % 10 - 1;
-        }
-
-        public int getX() {
-            return mMove / 10 - 1;
-        }
-
-        public String getText() {
-            if (mMove == PASS) return "--";
-
-            byte m[] = new byte[2];
-            m[0] = (byte) ('a' + getX());
-            m[1] = (byte) ('1' + getY());
-            return new String(m);
-        }
-    }
-
-    ;
-
-    // candidate move with evals
-    public class CandidateMove {
-        public Move mMove;
-        public boolean mHasEval;
-        public String mEvalShort;
-        public String mEvalLong;
-        public boolean mBest;
-
-        public CandidateMove(Move move) {
-            mMove = move;
-            mHasEval = false;
-        }
-
-        public CandidateMove(Move move, String evalShort, String evalLong, boolean best) {
-            mMove = move;
-            mEvalShort = evalShort;
-            mEvalLong = evalLong;
-            mBest = best;
-            mHasEval = true;
-        }
-    }
-
-    class GameState {
-        public int mDisksPlayed;
-        public byte[] mMoveSequence;
-    }
+    private int mMovesWithoutInput = 0;
 
     ;
     private GameState mInitialGameState;
-    private GameState mCurrentGameState;
 
+    ;
+    private GameState mCurrentGameState;
     // current move
     private JSONObject mPendingEvent = null;
-    private int mValidMoves[] = null;
 
+    ;
+    private int mValidMoves[] = null;
     // player info
     private PlayerInfo[] mPlayerInfo = {
             new PlayerInfo(PLAYER_BLACK, 0, 0, 0, INFINIT_TIME, 0),
@@ -207,25 +112,15 @@ public class ZebraEngine extends Thread {
     };
     private boolean mPlayerInfoChanged = false;
     private int mSideToMove = PLAYER_ZEBRA;
-
     // context
     private Context mContext;
-
     // message sink
     private Handler mHandler;
-
     // files folder
     private File mFilesDir;
-
-    // synchronization
-    static private final Object mJNILock = new Object();
-
     private Object mEngineStateEvent = new Object();
-
     private int mEngineState = ES_INITIAL;
-
     private boolean mRun = false;
-
     private boolean bInCallback = false;
 
     public ZebraEngine(Context context, Handler handler) {
@@ -288,15 +183,15 @@ public class ZebraEngine extends Thread {
         }
     }
 
+    public int getEngineState() {
+        return mEngineState;
+    }
+
     public void setEngineState(int state) {
         synchronized (mEngineStateEvent) {
             mEngineState = state;
             mEngineStateEvent.notifyAll();
         }
-    }
-
-    public int getEngineState() {
-        return mEngineState;
     }
 
     public boolean gameInProgress() {
@@ -556,13 +451,6 @@ public class ZebraEngine extends Thread {
             zeGlobalTerminate();
         }
     }
-
-
-    // called by native code
-    //public void Error(String msg) throws EngineError
-    //{
-    //	throw new EngineError(msg);
-    //}
 
     // called by native code - see droidzebra-msg.c
     private JSONObject Callback(int msgcode, JSONObject data) {
@@ -852,6 +740,13 @@ public class ZebraEngine extends Thread {
         return mPlayerInfo[mSideToMove].skill == 0;
     }
 
+
+    // called by native code
+    //public void Error(String msg) throws EngineError
+    //{
+    //	throw new EngineError(msg);
+    //}
+
     private void _prepareZebraFolder(File dir) throws IOException {
         File pattern = new File(dir, PATTERNS_FILE);
         File book = new File(dir, BOOK_FILE);
@@ -952,8 +847,94 @@ public class ZebraEngine extends Thread {
 
     public native void zeJsonTest(JSONObject json);
 
-    static {
-        System.loadLibrary("droidzebra");
+    // player info
+    public static class PlayerInfo {
+        public int playerColor;
+        public int skill;
+        public int exactSolvingSkill;
+        public int wldSolvingSkill;
+        public int playerTime;
+        public int playerTimeIncrement;
+        public PlayerInfo(int _player, int _skill, int _exact_skill, int _wld_skill, int _player_time, int _increment) {
+            assert (_player == PLAYER_BLACK || _player == PLAYER_WHITE || _player == PLAYER_ZEBRA);
+            playerColor = _player;
+            skill = _skill;
+            exactSolvingSkill = _exact_skill;
+            wldSolvingSkill = _wld_skill;
+            playerTime = _player_time;
+            playerTimeIncrement = _increment;
+
+        }
+    }
+
+    public static class InvalidMove extends Exception {
+        private static final long serialVersionUID = 8970579827351672330L;
+    }
+
+    // Zebra move representation
+    public static class Move {
+        public static int PASS = -1;
+        public int mMove;
+
+        public Move(int move) {
+            set(move);
+        }
+
+        public Move(int x, int y) {
+            set(x, y);
+        }
+
+        public void set(int move) {
+            mMove = move;
+        }
+
+        public void set(int x, int y) {
+            mMove = (x + 1) * 10 + y + 1;
+        }
+
+        public int getY() {
+            return mMove % 10 - 1;
+        }
+
+        public int getX() {
+            return mMove / 10 - 1;
+        }
+
+        public String getText() {
+            if (mMove == PASS) return "--";
+
+            byte m[] = new byte[2];
+            m[0] = (byte) ('a' + getX());
+            m[1] = (byte) ('1' + getY());
+            return new String(m);
+        }
+    }
+
+    // candidate move with evals
+    public class CandidateMove {
+        public Move mMove;
+        public boolean mHasEval;
+        public String mEvalShort;
+        public String mEvalLong;
+        public boolean mBest;
+
+        public CandidateMove(Move move) {
+            mMove = move;
+            mHasEval = false;
+        }
+
+        public CandidateMove(Move move, String evalShort, String evalLong, boolean best) {
+            mMove = move;
+            mEvalShort = evalShort;
+            mEvalLong = evalLong;
+            mBest = best;
+            mHasEval = true;
+        }
+    }
+
+    class GameState {
+        public int mDisksPlayed;
+        public byte[] mMoveSequence;
     }
 
 }

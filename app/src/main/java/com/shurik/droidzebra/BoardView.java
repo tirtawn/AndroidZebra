@@ -118,7 +118,7 @@ public class BoardView extends View {
         mBoardRect = new RectF();
         mTempRect = new RectF();
 
-        int animationDelay = 1000;
+        int animationDelay = 500;
         if (!isInEditMode())
             animationDelay = getDroidZebra().mSettingAnimationDelay;
         mAnimationProgress = 0;
@@ -136,12 +136,12 @@ public class BoardView extends View {
         };
     }
 
-    public void setDroidZebra(DroidZebra activity) {
-        mDroidZebra = activity;
-    }
-
     public DroidZebra getDroidZebra() {
         return mDroidZebra;
+    }
+
+    public void setDroidZebra(DroidZebra activity) {
+        mDroidZebra = activity;
     }
 
     public RectF getCellRect(int bx, int by) {

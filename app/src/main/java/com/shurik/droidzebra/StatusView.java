@@ -32,6 +32,173 @@ import java.util.TreeMap;
 
 public class StatusView extends View {
 
+    public static final int
+            ID_NONE = -1,
+            ID_SCORE_BLACK = 1,
+            ID_SCORE_WHITE = 2,
+            ID_SCORE_SKILL = 3,
+            ID_SCORELINE_NUM_1 = 10,
+            ID_SCORELINE_NUM_2 = 11,
+            ID_SCORELINE_NUM_3 = 12,
+            ID_SCORELINE_NUM_4 = 13,
+            ID_SCORELINE_WHITE_1 = 20,
+            ID_SCORELINE_WHITE_2 = 21,
+            ID_SCORELINE_WHITE_3 = 22,
+            ID_SCORELINE_WHITE_4 = 23,
+            ID_SCORELINE_BLACK_1 = 30,
+            ID_SCORELINE_BLACK_2 = 31,
+            ID_SCORELINE_BLACK_3 = 32,
+            ID_SCORELINE_BLACK_4 = 33,
+            ID_STATUS_OPENING = 50,
+            ID_STATUS_PV = 51,
+            ID_STATUS_EVAL = 52;
+
+    ;
+    private static final float
+            HSF = 0.8f, // horizontal scale factor between score box and moves table
+
+    STATUS_POS_Y = 0.8f,
+
+    SCORE_BOX_START_Y = 0.18f,
+            SCORE_BOX_END_Y = 0.76f,
+
+    SCORE_BOX_NUM_START_X = 0.02f * HSF,
+            SCORE_BOX_NUM_END_X = 0.10f * HSF,
+
+    SCORE_BOX_BLACK_START_X = 0.16f * HSF,
+            SCORE_BOX_BLACK_END_X = 0.28f * HSF,
+
+    SCORE_BOX_WHITE_START_X = 0.32f * HSF,
+            SCORE_BOX_WHITE_END_X = 0.46f * HSF;
+
+    ;
+    private DrawElement[] mLayout = {
+            new DrawLine(ID_NONE, 0.0f, 0.0f, 1.0f, 0.0f, R.color.statuslinecolor),
+            new DrawLine(ID_NONE, 0.0f, 1.0f, 1.0f, 1.0f, R.color.statuslinecolor),
+            new DrawLine(ID_NONE, 0.0f, 0.0f, 0.0f, 1.0f, R.color.statuslinecolor),
+            new DrawLine(ID_NONE, 1.0f, 0.0f, 1.0f, 1.0f, R.color.statuslinecolor),
+
+            new DrawLine(ID_NONE, 0.5f * HSF, 0.0f, 0.5f * HSF, STATUS_POS_Y, R.color.statuslinecolor),
+            new DrawLine(ID_NONE, 0.0f, STATUS_POS_Y, 1.0f, STATUS_POS_Y, R.color.statuslinecolor),
+
+            // moves panel
+            new DrawLine(ID_NONE, 0.12f * HSF, SCORE_BOX_START_Y, 0.48f * HSF, SCORE_BOX_START_Y, R.color.statuslinecolor),
+            new DrawLine(ID_NONE, 0.30f * HSF, SCORE_BOX_START_Y, 0.30f * HSF, SCORE_BOX_END_Y, R.color.statuslinecolor),
+            new DrawText(ID_NONE, 0.12f * HSF, 0.02f, 0.30f * HSF, SCORE_BOX_START_Y - 0.02f, "B", R.color.statustextcolor, Paint.Align.CENTER, DrawText.FLAG_FIT),
+            new DrawText(ID_NONE, 0.30f * HSF, 0.02f, 0.48f * HSF, SCORE_BOX_START_Y - 0.02f, "W", R.color.statustextcolor, Paint.Align.CENTER, DrawText.FLAG_FIT),
+
+            new DrawText(ID_SCORELINE_NUM_1, SCORE_BOX_NUM_START_X, SCORE_BOX_START_Y + 0 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, SCORE_BOX_NUM_END_X, SCORE_BOX_START_Y + 1 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, "12", R.color.statustextcolor, Paint.Align.RIGHT, 0),
+            new DrawText(ID_SCORELINE_NUM_2, SCORE_BOX_NUM_START_X, SCORE_BOX_START_Y + 1 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, SCORE_BOX_NUM_END_X, SCORE_BOX_START_Y + 2 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, "13", R.color.statustextcolor, Paint.Align.RIGHT, 0),
+            new DrawText(ID_SCORELINE_NUM_3, SCORE_BOX_NUM_START_X, SCORE_BOX_START_Y + 2 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, SCORE_BOX_NUM_END_X, SCORE_BOX_START_Y + 3 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, "14", R.color.statustextcolor, Paint.Align.RIGHT, 0),
+            new DrawText(ID_SCORELINE_NUM_4, SCORE_BOX_NUM_START_X, SCORE_BOX_START_Y + 3 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, SCORE_BOX_NUM_END_X, SCORE_BOX_START_Y + 4 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, "15", R.color.statustextcolor, Paint.Align.RIGHT, 0),
+
+            new DrawText(ID_SCORELINE_BLACK_1, SCORE_BOX_BLACK_START_X, SCORE_BOX_START_Y + 0 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, SCORE_BOX_BLACK_END_X, SCORE_BOX_START_Y + 1 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, "a1", R.color.statustextcolor, Paint.Align.CENTER, 0),
+            new DrawText(ID_SCORELINE_BLACK_2, SCORE_BOX_BLACK_START_X, SCORE_BOX_START_Y + 1 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, SCORE_BOX_BLACK_END_X, SCORE_BOX_START_Y + 2 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, "d3", R.color.statustextcolor, Paint.Align.CENTER, 0),
+            new DrawText(ID_SCORELINE_BLACK_3, SCORE_BOX_BLACK_START_X, SCORE_BOX_START_Y + 2 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, SCORE_BOX_BLACK_END_X, SCORE_BOX_START_Y + 3 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, "g8", R.color.statustextcolor, Paint.Align.CENTER, 0),
+            new DrawText(ID_SCORELINE_BLACK_4, SCORE_BOX_BLACK_START_X, SCORE_BOX_START_Y + 3 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, SCORE_BOX_BLACK_END_X, SCORE_BOX_START_Y + 4 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, "d7", R.color.statustextcolor, Paint.Align.CENTER, 0),
+
+            new DrawText(ID_SCORELINE_WHITE_1, SCORE_BOX_WHITE_START_X, SCORE_BOX_START_Y + 0 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, SCORE_BOX_WHITE_END_X, SCORE_BOX_START_Y + 1 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, "c4", R.color.statustextcolor, Paint.Align.CENTER, 0),
+            new DrawText(ID_SCORELINE_WHITE_2, SCORE_BOX_WHITE_START_X, SCORE_BOX_START_Y + 1 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, SCORE_BOX_WHITE_END_X, SCORE_BOX_START_Y + 2 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, "d3", R.color.statustextcolor, Paint.Align.CENTER, 0),
+            new DrawText(ID_SCORELINE_WHITE_3, SCORE_BOX_WHITE_START_X, SCORE_BOX_START_Y + 2 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, SCORE_BOX_WHITE_END_X, SCORE_BOX_START_Y + 3 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, "f5", R.color.statustextcolor, Paint.Align.CENTER, 0),
+            new DrawText(ID_SCORELINE_WHITE_4, SCORE_BOX_WHITE_START_X, SCORE_BOX_START_Y + 3 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, SCORE_BOX_WHITE_END_X, SCORE_BOX_START_Y + 4 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, "f9", R.color.statustextcolor, Paint.Align.CENTER, 0),
+
+            // score panel
+            new DrawText(ID_SCORE_BLACK, 0.44f, 0.10f, 0.67f, STATUS_POS_Y - 0.30f, "34", R.color.black, Paint.Align.RIGHT, 0),
+            new DrawText(ID_NONE, 0.67f, 0.20f, 0.73f, STATUS_POS_Y - 0.40f, ":", R.color.statustextcolor, Paint.Align.CENTER, DrawText.FLAG_FIT),
+            new DrawText(ID_SCORE_WHITE, 0.73f, 0.10f, 0.96f, STATUS_POS_Y - 0.30f, "21", R.color.white, Paint.Align.LEFT, 0),
+            new DrawText(ID_SCORE_SKILL, 0.48f, STATUS_POS_Y - 0.25f, 0.92f, STATUS_POS_Y - 0.15f, "Mid: 8  Exact: 16  W/L: 18", R.color.white, Paint.Align.CENTER, DrawText.FLAG_FIT),
+
+            // status panel
+            new DrawLine(ID_NONE, 0.40f, STATUS_POS_Y, 0.40f, 1.0f, R.color.statuslinecolor),
+            new DrawLine(ID_NONE, 0.80f, STATUS_POS_Y, 0.80f, 1.0f, R.color.statuslinecolor),
+            new DrawText(ID_STATUS_OPENING, 0.0f, STATUS_POS_Y + 0.04f, 0.40f, 1.0f - 0.04f, "Some other opening", R.color.statustextcolor, Paint.Align.CENTER, DrawText.FLAG_TRUNCATE),
+            new DrawText(ID_STATUS_PV, 0.40f, STATUS_POS_Y + 0.04f, 0.80f, 1.0f - 0.04f, "a1 b1 -- c2", R.color.statustextcolor, Paint.Align.CENTER, DrawText.FLAG_TRUNCATE),
+            new DrawText(ID_STATUS_EVAL, 0.80f, STATUS_POS_Y + 0.04f, 1.0f, 1.0f - 0.04f, "+5.4", R.color.statustextcolor, Paint.Align.CENTER, DrawText.FLAG_TRUNCATE),
+    };
+
+    ;
+    private TreeMap<Integer, DrawElement> mDrawTextIDMap = new TreeMap<Integer, DrawElement>();
+    private Paint mPaint;
+
+    public StatusView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        setFocusable(false);
+
+        mPaint = new Paint();
+        mPaint.setAntiAlias(true);
+        mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setStrokeWidth(Math.max(1f, TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0.5f, getResources().getDisplayMetrics())));
+        mPaint.setTypeface(Typeface.SERIF);
+
+        for (DrawElement elem : mLayout) {
+            if (elem.mID != ID_NONE && DrawText.class.isInstance(elem))
+                mDrawTextIDMap.put(elem.mID, elem);
+        }
+    }
+
+    public void setTextForID(int id, String text) {
+        DrawText de = (DrawText) mDrawTextIDMap.get(id);
+        if (de != null) {
+            de.setText(text);
+            if (getWidth() > 0 && getHeight() > 0) {
+                de.prepareDraw(getWidth() - 1, getHeight() - 1, mPaint);
+                de.invalidate();
+            }
+        }
+    }
+
+    public void clear() {
+        String blank = new String();
+        setTextForID(ID_SCORE_BLACK, blank);
+        setTextForID(ID_SCORE_WHITE, blank);
+        setTextForID(ID_SCORELINE_NUM_1, "1");
+        setTextForID(ID_SCORELINE_NUM_2, "2");
+        setTextForID(ID_SCORELINE_NUM_3, "3");
+        setTextForID(ID_SCORELINE_NUM_4, "4");
+        setTextForID(ID_SCORELINE_WHITE_1, blank);
+        setTextForID(ID_SCORELINE_WHITE_2, blank);
+        setTextForID(ID_SCORELINE_WHITE_3, blank);
+        setTextForID(ID_SCORELINE_WHITE_4, blank);
+        setTextForID(ID_SCORELINE_BLACK_1, blank);
+        setTextForID(ID_SCORELINE_BLACK_2, blank);
+        setTextForID(ID_SCORELINE_BLACK_3, blank);
+        setTextForID(ID_SCORELINE_BLACK_4, blank);
+        setTextForID(ID_STATUS_OPENING, blank);
+        setTextForID(ID_STATUS_PV, blank);
+        setTextForID(ID_STATUS_EVAL, blank);
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+
+        if (getWidth() == 0 || getHeight() == 0) return;
+
+        for (DrawElement elem : mLayout) {
+            elem.draw(canvas, mPaint);
+        }
+    }
+
+    private void recalculateLayout(float width, float height) {
+        for (DrawElement elem : mLayout) {
+            elem.prepareDraw(width, height, mPaint);
+        }
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        if (w > 0 && h > 0) {
+            recalculateLayout(w - 1, h - 1);
+            invalidate();
+        }
+        super.onSizeChanged(w, h, oldw, oldh);
+    }
+
     abstract private class DrawElement {
         public int mID;
 
@@ -51,8 +218,6 @@ public class StatusView extends View {
             StatusView.this.invalidate(bounds);
         }
     }
-
-    ;
 
     private class DrawLine extends DrawElement {
         // logical attrs
@@ -98,8 +263,6 @@ public class StatusView extends View {
             return new RectF(mXstart, mYstart, mXend, mYend);
         }
     }
-
-    ;
 
     private class DrawText extends DrawElement {
         public static final int
@@ -202,172 +365,6 @@ public class StatusView extends View {
         public RectF getScreenRectF() {
             return mScreenBounds;
         }
-    }
-
-    ;
-
-    public static final int
-            ID_NONE = -1,
-            ID_SCORE_BLACK = 1,
-            ID_SCORE_WHITE = 2,
-            ID_SCORE_SKILL = 3,
-            ID_SCORELINE_NUM_1 = 10,
-            ID_SCORELINE_NUM_2 = 11,
-            ID_SCORELINE_NUM_3 = 12,
-            ID_SCORELINE_NUM_4 = 13,
-            ID_SCORELINE_WHITE_1 = 20,
-            ID_SCORELINE_WHITE_2 = 21,
-            ID_SCORELINE_WHITE_3 = 22,
-            ID_SCORELINE_WHITE_4 = 23,
-            ID_SCORELINE_BLACK_1 = 30,
-            ID_SCORELINE_BLACK_2 = 31,
-            ID_SCORELINE_BLACK_3 = 32,
-            ID_SCORELINE_BLACK_4 = 33,
-            ID_STATUS_OPENING = 50,
-            ID_STATUS_PV = 51,
-            ID_STATUS_EVAL = 52;
-
-    private static final float
-            HSF = 0.8f, // horizontal scale factor between score box and moves table
-
-    STATUS_POS_Y = 0.8f,
-
-    SCORE_BOX_START_Y = 0.18f,
-            SCORE_BOX_END_Y = 0.76f,
-
-    SCORE_BOX_NUM_START_X = 0.02f * HSF,
-            SCORE_BOX_NUM_END_X = 0.10f * HSF,
-
-    SCORE_BOX_BLACK_START_X = 0.16f * HSF,
-            SCORE_BOX_BLACK_END_X = 0.28f * HSF,
-
-    SCORE_BOX_WHITE_START_X = 0.32f * HSF,
-            SCORE_BOX_WHITE_END_X = 0.46f * HSF;
-
-    private DrawElement[] mLayout = {
-            new DrawLine(ID_NONE, 0.0f, 0.0f, 1.0f, 0.0f, R.color.statuslinecolor),
-            new DrawLine(ID_NONE, 0.0f, 1.0f, 1.0f, 1.0f, R.color.statuslinecolor),
-            new DrawLine(ID_NONE, 0.0f, 0.0f, 0.0f, 1.0f, R.color.statuslinecolor),
-            new DrawLine(ID_NONE, 1.0f, 0.0f, 1.0f, 1.0f, R.color.statuslinecolor),
-
-            new DrawLine(ID_NONE, 0.5f * HSF, 0.0f, 0.5f * HSF, STATUS_POS_Y, R.color.statuslinecolor),
-            new DrawLine(ID_NONE, 0.0f, STATUS_POS_Y, 1.0f, STATUS_POS_Y, R.color.statuslinecolor),
-
-            // moves panel
-            new DrawLine(ID_NONE, 0.12f * HSF, SCORE_BOX_START_Y, 0.48f * HSF, SCORE_BOX_START_Y, R.color.statuslinecolor),
-            new DrawLine(ID_NONE, 0.30f * HSF, SCORE_BOX_START_Y, 0.30f * HSF, SCORE_BOX_END_Y, R.color.statuslinecolor),
-            new DrawText(ID_NONE, 0.12f * HSF, 0.02f, 0.30f * HSF, SCORE_BOX_START_Y - 0.02f, "B", R.color.statustextcolor, Paint.Align.CENTER, DrawText.FLAG_FIT),
-            new DrawText(ID_NONE, 0.30f * HSF, 0.02f, 0.48f * HSF, SCORE_BOX_START_Y - 0.02f, "W", R.color.statustextcolor, Paint.Align.CENTER, DrawText.FLAG_FIT),
-
-            new DrawText(ID_SCORELINE_NUM_1, SCORE_BOX_NUM_START_X, SCORE_BOX_START_Y + 0 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, SCORE_BOX_NUM_END_X, SCORE_BOX_START_Y + 1 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, "12", R.color.statustextcolor, Paint.Align.RIGHT, 0),
-            new DrawText(ID_SCORELINE_NUM_2, SCORE_BOX_NUM_START_X, SCORE_BOX_START_Y + 1 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, SCORE_BOX_NUM_END_X, SCORE_BOX_START_Y + 2 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, "13", R.color.statustextcolor, Paint.Align.RIGHT, 0),
-            new DrawText(ID_SCORELINE_NUM_3, SCORE_BOX_NUM_START_X, SCORE_BOX_START_Y + 2 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, SCORE_BOX_NUM_END_X, SCORE_BOX_START_Y + 3 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, "14", R.color.statustextcolor, Paint.Align.RIGHT, 0),
-            new DrawText(ID_SCORELINE_NUM_4, SCORE_BOX_NUM_START_X, SCORE_BOX_START_Y + 3 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, SCORE_BOX_NUM_END_X, SCORE_BOX_START_Y + 4 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, "15", R.color.statustextcolor, Paint.Align.RIGHT, 0),
-
-            new DrawText(ID_SCORELINE_BLACK_1, SCORE_BOX_BLACK_START_X, SCORE_BOX_START_Y + 0 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, SCORE_BOX_BLACK_END_X, SCORE_BOX_START_Y + 1 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, "a1", R.color.statustextcolor, Paint.Align.CENTER, 0),
-            new DrawText(ID_SCORELINE_BLACK_2, SCORE_BOX_BLACK_START_X, SCORE_BOX_START_Y + 1 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, SCORE_BOX_BLACK_END_X, SCORE_BOX_START_Y + 2 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, "d3", R.color.statustextcolor, Paint.Align.CENTER, 0),
-            new DrawText(ID_SCORELINE_BLACK_3, SCORE_BOX_BLACK_START_X, SCORE_BOX_START_Y + 2 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, SCORE_BOX_BLACK_END_X, SCORE_BOX_START_Y + 3 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, "g8", R.color.statustextcolor, Paint.Align.CENTER, 0),
-            new DrawText(ID_SCORELINE_BLACK_4, SCORE_BOX_BLACK_START_X, SCORE_BOX_START_Y + 3 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, SCORE_BOX_BLACK_END_X, SCORE_BOX_START_Y + 4 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, "d7", R.color.statustextcolor, Paint.Align.CENTER, 0),
-
-            new DrawText(ID_SCORELINE_WHITE_1, SCORE_BOX_WHITE_START_X, SCORE_BOX_START_Y + 0 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, SCORE_BOX_WHITE_END_X, SCORE_BOX_START_Y + 1 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, "c4", R.color.statustextcolor, Paint.Align.CENTER, 0),
-            new DrawText(ID_SCORELINE_WHITE_2, SCORE_BOX_WHITE_START_X, SCORE_BOX_START_Y + 1 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, SCORE_BOX_WHITE_END_X, SCORE_BOX_START_Y + 2 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, "d3", R.color.statustextcolor, Paint.Align.CENTER, 0),
-            new DrawText(ID_SCORELINE_WHITE_3, SCORE_BOX_WHITE_START_X, SCORE_BOX_START_Y + 2 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, SCORE_BOX_WHITE_END_X, SCORE_BOX_START_Y + 3 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, "f5", R.color.statustextcolor, Paint.Align.CENTER, 0),
-            new DrawText(ID_SCORELINE_WHITE_4, SCORE_BOX_WHITE_START_X, SCORE_BOX_START_Y + 3 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, SCORE_BOX_WHITE_END_X, SCORE_BOX_START_Y + 4 * (SCORE_BOX_END_Y - SCORE_BOX_START_Y) / 4, "f9", R.color.statustextcolor, Paint.Align.CENTER, 0),
-
-            // score panel
-            new DrawText(ID_SCORE_BLACK, 0.44f, 0.10f, 0.67f, STATUS_POS_Y - 0.30f, "34", R.color.black, Paint.Align.RIGHT, 0),
-            new DrawText(ID_NONE, 0.67f, 0.20f, 0.73f, STATUS_POS_Y - 0.40f, ":", R.color.statustextcolor, Paint.Align.CENTER, DrawText.FLAG_FIT),
-            new DrawText(ID_SCORE_WHITE, 0.73f, 0.10f, 0.96f, STATUS_POS_Y - 0.30f, "21", R.color.white, Paint.Align.LEFT, 0),
-            new DrawText(ID_SCORE_SKILL, 0.48f, STATUS_POS_Y - 0.25f, 0.92f, STATUS_POS_Y - 0.15f, "Mid: 8  Exact: 16  W/L: 18", R.color.white, Paint.Align.CENTER, DrawText.FLAG_FIT),
-
-            // status panel
-            new DrawLine(ID_NONE, 0.40f, STATUS_POS_Y, 0.40f, 1.0f, R.color.statuslinecolor),
-            new DrawLine(ID_NONE, 0.80f, STATUS_POS_Y, 0.80f, 1.0f, R.color.statuslinecolor),
-            new DrawText(ID_STATUS_OPENING, 0.0f, STATUS_POS_Y + 0.04f, 0.40f, 1.0f - 0.04f, "Some other opening", R.color.statustextcolor, Paint.Align.CENTER, DrawText.FLAG_TRUNCATE),
-            new DrawText(ID_STATUS_PV, 0.40f, STATUS_POS_Y + 0.04f, 0.80f, 1.0f - 0.04f, "a1 b1 -- c2", R.color.statustextcolor, Paint.Align.CENTER, DrawText.FLAG_TRUNCATE),
-            new DrawText(ID_STATUS_EVAL, 0.80f, STATUS_POS_Y + 0.04f, 1.0f, 1.0f - 0.04f, "+5.4", R.color.statustextcolor, Paint.Align.CENTER, DrawText.FLAG_TRUNCATE),
-    };
-    private TreeMap<Integer, DrawElement> mDrawTextIDMap = new TreeMap<Integer, DrawElement>();
-
-    private Paint mPaint;
-
-    public StatusView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        setFocusable(false);
-
-        mPaint = new Paint();
-        mPaint.setAntiAlias(true);
-        mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setStrokeWidth(Math.max(1f, TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0.5f, getResources().getDisplayMetrics())));
-        mPaint.setTypeface(Typeface.SERIF);
-
-        for (DrawElement elem : mLayout) {
-            if (elem.mID != ID_NONE && DrawText.class.isInstance(elem))
-                mDrawTextIDMap.put(elem.mID, elem);
-        }
-    }
-
-    public void setTextForID(int id, String text) {
-        DrawText de = (DrawText) mDrawTextIDMap.get(id);
-        if (de != null) {
-            de.setText(text);
-            if (getWidth() > 0 && getHeight() > 0) {
-                de.prepareDraw(getWidth() - 1, getHeight() - 1, mPaint);
-                de.invalidate();
-            }
-        }
-    }
-
-    public void clear() {
-        String blank = new String();
-        setTextForID(ID_SCORE_BLACK, blank);
-        setTextForID(ID_SCORE_WHITE, blank);
-        setTextForID(ID_SCORELINE_NUM_1, "1");
-        setTextForID(ID_SCORELINE_NUM_2, "2");
-        setTextForID(ID_SCORELINE_NUM_3, "3");
-        setTextForID(ID_SCORELINE_NUM_4, "4");
-        setTextForID(ID_SCORELINE_WHITE_1, blank);
-        setTextForID(ID_SCORELINE_WHITE_2, blank);
-        setTextForID(ID_SCORELINE_WHITE_3, blank);
-        setTextForID(ID_SCORELINE_WHITE_4, blank);
-        setTextForID(ID_SCORELINE_BLACK_1, blank);
-        setTextForID(ID_SCORELINE_BLACK_2, blank);
-        setTextForID(ID_SCORELINE_BLACK_3, blank);
-        setTextForID(ID_SCORELINE_BLACK_4, blank);
-        setTextForID(ID_STATUS_OPENING, blank);
-        setTextForID(ID_STATUS_PV, blank);
-        setTextForID(ID_STATUS_EVAL, blank);
-    }
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-
-        if (getWidth() == 0 || getHeight() == 0) return;
-
-        for (DrawElement elem : mLayout) {
-            elem.draw(canvas, mPaint);
-        }
-    }
-
-    private void recalculateLayout(float width, float height) {
-        for (DrawElement elem : mLayout) {
-            elem.prepareDraw(width, height, mPaint);
-        }
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    }
-
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        if (w > 0 && h > 0) {
-            recalculateLayout(w - 1, h - 1);
-            invalidate();
-        }
-        super.onSizeChanged(w, h, oldw, oldh);
     }
 
 

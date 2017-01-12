@@ -24,7 +24,7 @@
         </activity>
 
         <activity
-            android:name=".SettingsPreferences"
+            android:name=".SettingsActivity"
             android:allowTaskReparenting="false"
             android:label="@string/settings_title"
             android:launchMode="singleTask"

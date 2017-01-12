@@ -1049,7 +1049,7 @@ static long long int
 rdtsc( void ) {
 #if defined(__GNUC__)
   long long a;
-  asm volatile("rdtsc":"=A" (a));
+  //asm volatile("rdtsc":"=A" (a));
   return a;
 #else
   return 0;
