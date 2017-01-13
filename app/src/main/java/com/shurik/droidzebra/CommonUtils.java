@@ -44,7 +44,7 @@ public class CommonUtils {
         if (prefs.contains(key)) {
             language = prefs.getString(key, language);
         } else {
-            prefs.edit().putString(key, language).commit();
+            prefs.edit().putString(key, language).apply();
         }
         setLanguageLocale(activity, language);
     }

@@ -34,7 +34,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 //import android.util.Log;
 
-// DroidZebra -> ZebraEngine:public -async-> ZebraEngine thread(jni) -> Callback() -async-> DroidZebra:Handler 
+// DroidZebra -> ZebraEngine:public -async-> ZebraEngine thread(jni) -> Callback() -async-> DroidZebra:Handler
 public class ZebraEngine extends Thread {
 
     static public final int BOARD_SIZE = 8;
@@ -142,7 +142,7 @@ public class ZebraEngine extends Thread {
         // if not - try external folder
         try {
             if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
-                File extDir = new File(android.os.Environment.getExternalStorageDirectory(), "/DroidZebra/files/");
+                File extDir = new File(android.os.Environment.getExternalStorageDirectory(), "/ZebraActivity/files/");
                 _prepareZebraFolder(extDir); //may throw
                 mFilesDir = extDir;
             }

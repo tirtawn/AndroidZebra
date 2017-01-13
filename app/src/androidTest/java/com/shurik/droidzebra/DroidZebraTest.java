@@ -15,10 +15,10 @@ import org.json.JSONObject;
  * -e class com.shurik.droidzebra.DroidZebraTest \
  * com.shurik.droidzebra.tests/android.test.InstrumentationTestRunner
  */
-public class DroidZebraTest extends ActivityInstrumentationTestCase2<DroidZebra> {
+public class DroidZebraTest extends ActivityInstrumentationTestCase2<ZebraActivity> {
 
     public DroidZebraTest() {
-        super("com.shurik.droidzebra", DroidZebra.class);
+        super("com.shurik.droidzebra", ZebraActivity.class);
     }
 
 
