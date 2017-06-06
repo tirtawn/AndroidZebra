@@ -33,6 +33,7 @@ import android.os.Message;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -50,8 +51,6 @@ import com.shurik.droidzebra.ZebraEngine.PlayerInfo;
 
 import java.util.Calendar;
 import java.util.Date;
-
-//import android.util.Log;
 
 public class ZebraActivity extends FragmentActivity
         implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -241,7 +240,6 @@ public class ZebraActivity extends FragmentActivity
                     mZebraThread.redoMove();
                     return true;
                 case R.id.menu_settings: {
-                    // Launch Preference activity
                     Intent i = new Intent(this, SettingsActivity.class);
                     startActivity(i);
                 }
@@ -279,9 +277,7 @@ public class ZebraActivity extends FragmentActivity
         CommonUtils.updateLanguageLocal(this);
 
         setContentView(R.layout.spash_layout);
-        if (android.os.Build.VERSION.SDK_INT >= 11) {
-            new ActionBarHelper().hide();
-        }
+        new ActionBarHelper().hide();
 
         // start your engines
         mDroidZebraHandler = new DroidZebraHandler();
@@ -342,25 +338,19 @@ public class ZebraActivity extends FragmentActivity
 
         SharedPreferences settings = getSharedPreferences(Constants.SHARED_PREFS_NAME, 0);
 
-        settingsFunction = Integer.parseInt(settings.getString(SETTINGS_KEY_FUNCTION, String.format("%d", DEFAULT_SETTING_FUNCTION)));
+        settingsFunction = Integer.parseInt(settings.getString(SETTINGS_KEY_FUNCTION, String.valueOf(DEFAULT_SETTING_FUNCTION)));
         String[] strength = settings.getString(SETTINGS_KEY_STRENGTH, DEFAULT_SETTING_STRENGTH).split("\\|");
-        // Log.d("ZebraActivity", String.format("settings %s:%s|%s|%s", SETTINGS_KEY_STRENGTH, strength[0], strength[1], strength[2]));
 
         settingZebraDepth = Integer.parseInt(strength[0]);
         settingZebraDepthExact = Integer.parseInt(strength[1]);
         settingZebraDepthWLD = Integer.parseInt(strength[2]);
-        //Log.d( "ZebraActivity",
-        //		String.format("Function: %d; depth: %d; exact: %d; wld %d",
-        //				mSettingFunction, mSettingZebraDepth, mSettingZebraDepthExact, mSettingZebraDepthWLD)
-        //);
 
         settingAutoMakeForcedMoves = settings.getBoolean(SETTINGS_KEY_AUTO_MAKE_FORCED_MOVES, DEFAULT_SETTING_AUTO_MAKE_FORCED_MOVES);
-        settingRandomness = Integer.parseInt(settings.getString(SETTINGS_KEY_RANDOMNESS, String.format("%d", DEFAULT_SETTING_RANDOMNESS)));
+        settingRandomness = Integer.parseInt(settings.getString(SETTINGS_KEY_RANDOMNESS, String.valueOf(DEFAULT_SETTING_RANDOMNESS)));
         settingZebraForceOpening = settings.getString(SETTINGS_KEY_FORCE_OPENING, DEFAULT_SETTING_FORCE_OPENING);
         settingZebraHumanOpenings = settings.getBoolean(SETTINGS_KEY_HUMAN_OPENINGS, DEFAULT_SETTING_HUMAN_OPENINGS);
         settingZebraPracticeMode = settings.getBoolean(SETTINGS_KEY_PRACTICE_MODE, DEFAULT_SETTING_PRACTICE_MODE);
         settingZebraUseBook = settings.getBoolean(SETTINGS_KEY_USE_BOOK, DEFAULT_SETTING_USE_BOOK);
-
 
         boolean bZebraSettingChanged = (
                 mSettingFunction != settingsFunction
@@ -498,12 +488,10 @@ public class ZebraActivity extends FragmentActivity
                 sbBlackPlayer.append(mSettingZebraDepthExact);
                 sbBlackPlayer.append("/");
                 sbBlackPlayer.append(mSettingZebraDepthWLD);
-
                 sbWhitePlayer.append("Player");
                 break;
             case FUNCTION_ZEBRA_WHITE:
                 sbBlackPlayer.append("Player");
-
                 sbWhitePlayer.append("ZebraActivity-");
                 sbWhitePlayer.append(mSettingZebraDepth);
                 sbWhitePlayer.append("/");
@@ -536,7 +524,7 @@ public class ZebraActivity extends FragmentActivity
         sb.append("\r\n\r\n");
         sb.append(getResources().getString(R.string.mail_move));
         sb.append(" ");
-        StringBuffer sbMoves = new StringBuffer();
+        StringBuilder sbMoves = new StringBuilder();
         if (moves != null) {
             for (byte move1 : moves) {
                 if (move1 != 0x00) {
@@ -588,7 +576,7 @@ public class ZebraActivity extends FragmentActivity
         if (newFunction > 0) {
             SharedPreferences settings = getSharedPreferences(Constants.SHARED_PREFS_NAME, 0);
             SharedPreferences.Editor editor = settings.edit();
-            editor.putString(SETTINGS_KEY_FUNCTION, String.format("%d", newFunction));
+            editor.putString(SETTINGS_KEY_FUNCTION, String.valueOf(newFunction));
             editor.apply();
         }
 
@@ -617,6 +605,7 @@ public class ZebraActivity extends FragmentActivity
                 mZebraThread.join();
                 retry = false;
             } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
         mDroidZebraHandler = null;
@@ -982,16 +971,6 @@ public class ZebraActivity extends FragmentActivity
         }
     }
 
-	/* requires api level 5 
-    @Override
-	public void onBackPressed() {
-		try {
-			mZebraThread.undoMove();
-		} catch (EngineError e) {
-			FatalError(e.msg);
-		}
-	} */
-
     @SuppressLint("HandlerLeak")
     class DroidZebraHandler extends Handler {
         @Override
@@ -1122,7 +1101,7 @@ public class ZebraActivity extends FragmentActivity
                 case ZebraEngine.MSG_PV: {
                     if (mSettingDisplayPV) {
                         byte[] pv = m.getData().getByteArray("pv");
-                        String pvText = new String();
+                        String pvText = "";
                         for (byte move : pv) {
                             pvText += new Move(move).getText();
                             pvText += " ";
@@ -1160,14 +1139,14 @@ public class ZebraActivity extends FragmentActivity
                 break;
 
                 case ZebraEngine.MSG_DEBUG: {
-//				Log.d("ZebraActivity", m.getData().getString("message"));
+                    Log.d("ZebraActivity", m.getData().getString("message"));
                 }
                 break;
             }
         }
     }
 
-    class ActionBarHelper {
+    private class ActionBarHelper {
         void show() {
             getActionBar().show();
         }
@@ -1176,6 +1155,5 @@ public class ZebraActivity extends FragmentActivity
             getActionBar().hide();
         }
     }
-
 
 }

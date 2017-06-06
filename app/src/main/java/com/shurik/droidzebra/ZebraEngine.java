@@ -20,6 +20,7 @@ package com.shurik.droidzebra;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 
@@ -142,7 +143,7 @@ public class ZebraEngine extends Thread {
         // if not - try external folder
         try {
             if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
-                File extDir = new File(android.os.Environment.getExternalStorageDirectory(), "/ZebraActivity/files/");
+                File extDir = new File(android.os.Environment.getExternalStorageDirectory(), "/DroidZebra/files/");
                 _prepareZebraFolder(extDir); //may throw
                 mFilesDir = extDir;
             }
