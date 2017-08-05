@@ -756,7 +756,7 @@ public class ZebraActivity extends FragmentActivity
             return new AlertDialog.Builder(getActivity())
                     .setTitle(R.string.dialog_donate_title)
                     .setMessage(R.string.dialog_donate_message)
-                    .setIcon(R.drawable.icon)
+                    .setIcon(R.mipmap.ic_launcher)
                     .setPositiveButton(R.string.dialog_donate_doit, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     String url = getResources().getString(R.string.donate_url);

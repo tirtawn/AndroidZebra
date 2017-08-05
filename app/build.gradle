@@ -1,40 +1,44 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.model.application'
 
-android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.3'
-    signingConfigs {
-        demoSign {
+model {
+    android {
+        compileSdkVersion 25
+        buildToolsVersion '25.0.3'
+
+        defaultConfig {
+            applicationId "com.shurik.droidzebra"
+            minSdkVersion.apiLevel 15
+            targetSdkVersion.apiLevel 25
+            versionCode 17
+            versionName '1.5.3'
+        }
+
+        ndk {
+            moduleName "droidzebra"
+            platformVersion 25
+            ldLibs.addAll(["log", "z", "m"])
+            CFlags.addAll(['-DZLIB_STATIC', '-D__linux__', '-D__CYGWIN__', '-DANDROID', '-Wall',
+                           '-Wcast-align', '-Wwrite-strings', '-Wstrict-prototypes',
+                           '-Winline', '-O3', '-s', '-fomit-frame-pointer',
+                           '-falign-functions=32', '-finline-limit=3200'])
+            abiFilters.addAll(['armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'])
+        }
+    }
+
+    android.signingConfigs {
+        create("release") {
             storeFile file('demokey.jks')
-            storePassword "demokey"
+            storePassword 'demokey'
             keyAlias 'demokey'
             keyPassword 'demokey'
         }
     }
-    lintOptions {
-        abortOnError false
-    }
-    defaultConfig {
-        applicationId "com.shurik.droidzebra"
-        minSdkVersion 15
-        targetSdkVersion 25
-        versionCode 17
-        versionName '1.5.3'
-        ndk {
-            moduleName "droidzebra"
-            abiFilters "armeabi", "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
-            ldLibs "m", "z"
-            cFlags '-DZLIB_STATIC -D__linux__ -D__CYGWIN__ -DANDROID ' +
-                    '-Wall -Wcast-align -Wwrite-strings -Wstrict-prototypes -Winline ' +
-                    '-O3 -s -fomit-frame-pointer -falign-functions=32 -finline-limit=3200'
-        }
-    }
-    buildTypes {
+
+    android.buildTypes {
         release {
-            minifyEnabled false
-            shrinkResources false
-            signingConfig signingConfigs.demoSign
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            useProguard true
+            proguardFiles.add(file('proguard-rules.pro'))
+            signingConfig = $("android.signingConfigs.release")
         }
     }
 }
