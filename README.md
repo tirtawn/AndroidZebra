@@ -6,6 +6,7 @@
 * The project is from f-droid: https://f-droid.org/repository/browse/?fdfilter=zebra&fdid=com.shurik.droidzebra
 * I change some code to compile it on android studio
 * You will need android studio and NDK to compile the project
+* Now, compile with gradle-experimental
 * 最初代码来源于f-droid：https://f-droid.org/repository/browse/?fdfilter=zebra&fdid=com.shurik.droidzebra
 * 需要使用NDK来编译
 * 带中文语言翻译，是个非常不错的黑白棋游戏

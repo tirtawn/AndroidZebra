@@ -15,7 +15,7 @@ model {
 
         ndk {
             moduleName "droidzebra"
-            platformVersion 25
+            platformVersion 26
             ldLibs.addAll(["log", "z", "m"])
             CFlags.addAll(['-DZLIB_STATIC', '-D__linux__', '-D__CYGWIN__', '-DANDROID', '-Wall',
                            '-Wcast-align', '-Wwrite-strings', '-Wstrict-prototypes',
