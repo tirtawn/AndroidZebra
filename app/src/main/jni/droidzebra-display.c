@@ -15,24 +15,17 @@
     along with DroidZebra.  If not, see <http://www.gnu.org/licenses/>
 */
 
-#include "zebra/porting.h"
-
 #include <math.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "zebra/constant.h"
 #include "zebra/display.h"
 #include "zebra/eval.h"
-#include "zebra/globals.h"
-#include "zebra/macros.h"
 #include "zebra/safemem.h"
-#include "zebra/search.h"
 #include "zebra/texts.h"
 #include "zebra/timer.h"
 
-#include "droidzebra.h"
 #include "droidzebra-msg.h"
 
 
@@ -74,32 +67,32 @@ static int *black_list, *white_list;
  */
 
 void
-set_names( const char *black_name, const char *white_name ) {
-	if ( black_player != NULL )
-		free( black_player );
-	if ( white_player != NULL )
-		free( white_player );
-	black_player = strdup( black_name );
-	white_player = strdup( white_name );
+set_names(const char *black_name, const char *white_name) {
+    if (black_player != NULL)
+        free(black_player);
+    if (white_player != NULL)
+        free(white_player);
+    black_player = strdup(black_name);
+    white_player = strdup(white_name);
 }
 
 void
-set_times( int black, int white ) {
-	black_time = black;
-	white_time = white;
+set_times(int black, int white) {
+    black_time = black;
+    white_time = white;
 }
 
 void
-set_evals( double black, double white ) {
-	black_eval = black;
-	white_eval = white;
+set_evals(double black, double white) {
+    black_eval = black;
+    white_eval = white;
 }
 
 void
-set_move_list( int *black, int *white, int row ) {
-	black_list = black;
-	white_list = white;
-	current_row = row;
+set_move_list(int *black, int *white, int row) {
+    black_list = black;
+    white_list = white;
+    current_row = row;
 }
 
 
@@ -114,16 +107,16 @@ set_move_list( int *black, int *white, int row ) {
  */
 
 void
-display_board( FILE *stream, int *board, int side_to_move,
-		int give_game_score, int give_time, int give_evals ) {
-	droidzebra_msg_board(
-		board,
-		side_to_move,
-		black_eval,
-		white_eval,
-		black_time,
-		white_time
-	);
+display_board(FILE *stream, int *board, int side_to_move,
+              int give_game_score, int give_time, int give_evals) {
+    droidzebra_msg_board(
+            board,
+            side_to_move,
+            black_eval,
+            white_eval,
+            black_time,
+            white_time
+    );
 }
 
 
@@ -133,11 +126,11 @@ display_board( FILE *stream, int *board, int side_to_move,
  */
 
 void
-display_move( FILE *stream, int move ) {
-	if ( move == PASS )
-		fprintf( stream, "--" );
-	else
-		fprintf( stream, "%c%c", TO_SQUARE( move ) );
+display_move(FILE *stream, int move) {
+    if (move == PASS)
+        fprintf(stream, "--");
+    else
+        fprintf(stream, "%c%c", TO_SQUARE(move));
 }
 
 
@@ -147,8 +140,8 @@ display_move( FILE *stream, int move ) {
  */
 
 void
-display_optimal_line( FILE *stream ) {
-	droidzebra_msg_pv();
+display_optimal_line(FILE *stream) {
+    droidzebra_msg_pv();
 }
 
 
@@ -158,15 +151,15 @@ display_optimal_line( FILE *stream ) {
  */
 
 void
-send_status( const char *format, ... ) {
-	int written;
-	va_list arg_ptr;
+send_status(const char *format, ...) {
+    int written;
+    va_list arg_ptr;
 
-	va_start( arg_ptr, format );
-	written = vsprintf( status_buffer + status_pos, format, arg_ptr );
-	status_pos += written;
-	status_modified = TRUE;
-	va_end( arg_ptr );
+    va_start(arg_ptr, format);
+    written = vsprintf(status_buffer + status_pos, format, arg_ptr);
+    status_pos += written;
+    status_modified = TRUE;
+    va_end(arg_ptr);
 }
 
 
@@ -178,12 +171,12 @@ send_status( const char *format, ... ) {
  */
 
 void
-send_status_time( double elapsed_time ) {
-	if ( elapsed_time < 10000.0 )
-		send_status( "%6.1f %c", elapsed_time, SECOND_ABBREV );
-	else
-		send_status( "%6d %c", (int) ceil( elapsed_time ), SECOND_ABBREV );
-	send_status( "  " );
+send_status_time(double elapsed_time) {
+    if (elapsed_time < 10000.0)
+        send_status("%6.1f %c", elapsed_time, SECOND_ABBREV);
+    else
+        send_status("%6d %c", (int) ceil(elapsed_time), SECOND_ABBREV);
+    send_status("  ");
 }
 
 
@@ -195,19 +188,19 @@ send_status_time( double elapsed_time ) {
  */
 
 void
-send_status_nodes( double node_count ) {
-	if ( node_count < 1.0e8 )
-		send_status( "%8.0f  ", node_count );
-	else {
-		if ( node_count < 1.0e10 )
-			send_status( "%7.0f%c  ", node_count / 1000.0, KILO_ABBREV );
-		else {
-			if ( node_count < 1.0e13 )
-				send_status( "%7.0f%c  ", node_count / 1000000.0, MEGA_ABBREV );
-			else
-				send_status( "%7.0f%c  ", node_count / 1000000000.0, GIGA_ABBREV );
-		}
-	}
+send_status_nodes(double node_count) {
+    if (node_count < 1.0e8)
+        send_status("%8.0f  ", node_count);
+    else {
+        if (node_count < 1.0e10)
+            send_status("%7.0f%c  ", node_count / 1000.0, KILO_ABBREV);
+        else {
+            if (node_count < 1.0e13)
+                send_status("%7.0f%c  ", node_count / 1000000.0, MEGA_ABBREV);
+            else
+                send_status("%7.0f%c  ", node_count / 1000000000.0, GIGA_ABBREV);
+        }
+    }
 }
 
 
@@ -217,16 +210,15 @@ send_status_nodes( double node_count ) {
  */
 
 void
-send_status_pv( int *pv, int max_depth )
-{
-	int i;
+send_status_pv(int *pv, int max_depth) {
+    int i;
 
-	for ( i = 0; i < MIN( max_depth, 5 ); i++ )
-		if ( i < pv_depth[0] )
-			send_status( "%c%c ", TO_SQUARE( pv[i] ) );
-		else
-			send_status( "   " );
-	send_status( " " );
+    for (i = 0; i < MIN(max_depth, 5); i++)
+        if (i < pv_depth[0])
+            send_status("%c%c ", TO_SQUARE(pv[i]));
+        else
+            send_status("   ");
+    send_status(" ");
 }
 
 
@@ -236,10 +228,10 @@ send_status_pv( int *pv, int max_depth )
  */
 
 void
-clear_status( void ) {
-	status_pos = 0;
-	status_buffer[0] = 0;
-	status_modified = TRUE;
+clear_status(void) {
+    status_pos = 0;
+    status_buffer[0] = 0;
+    status_modified = TRUE;
 }
 
 
@@ -249,28 +241,27 @@ clear_status( void ) {
  */
 
 void
-display_status( FILE *stream, int allow_repeat ) {
-	// original
-	if ( ((status_pos != 0) || allow_repeat ) &&
-			(strlen( status_buffer ) > 0) ) {
-		droidzebra_message_debug( "status: %s\n", status_buffer );
-		strcpy( stored_status_buffer, status_buffer );
-	}
-	status_pos = 0;
-	// end - orginal
+display_status(FILE *stream, int allow_repeat) {
+    // original
+    if (((status_pos != 0) || allow_repeat) &&
+        (strlen(status_buffer) > 0)) {
+        droidzebra_message_debug("status: %s\n", status_buffer);
+        strcpy(stored_status_buffer, status_buffer);
+    }
+    status_pos = 0;
+    // end - orginal
 
-	//send eval
-	droidzebra_msg_eval();
-	droidzebra_msg_pv();
-	droidzebra_msg_candidate_evals();
+    //send eval
+    droidzebra_msg_eval();
+    droidzebra_msg_pv();
+    droidzebra_msg_candidate_evals();
 }
 
 
 const char *
-get_last_status( void ) {
-	return stored_status_buffer;
+get_last_status(void) {
+    return stored_status_buffer;
 }
-
 
 
 /*
@@ -279,15 +270,15 @@ get_last_status( void ) {
  */
 
 void
-send_sweep( const char *format, ... ) {
-	int written;
-	va_list arg_ptr;
+send_sweep(const char *format, ...) {
+    int written;
+    va_list arg_ptr;
 
-	va_start( arg_ptr, format );
-	written = vsprintf( sweep_buffer + sweep_pos, format, arg_ptr );
-	sweep_pos += written;
-	sweep_modified = TRUE;
-	va_end( arg_ptr );
+    va_start(arg_ptr, format);
+    written = vsprintf(sweep_buffer + sweep_pos, format, arg_ptr);
+    sweep_pos += written;
+    sweep_modified = TRUE;
+    va_end(arg_ptr);
 }
 
 
@@ -297,10 +288,10 @@ send_sweep( const char *format, ... ) {
  */
 
 void
-clear_sweep( void ) {
-	sweep_pos = 0;
-	sweep_buffer[0] = 0;
-	sweep_modified = TRUE;
+clear_sweep(void) {
+    sweep_pos = 0;
+    sweep_buffer[0] = 0;
+    sweep_modified = TRUE;
 }
 
 
@@ -310,13 +301,13 @@ clear_sweep( void ) {
  */
 
 void
-display_sweep( FILE *stream ) {
+display_sweep(FILE *stream) {
 #ifndef TEXT_BASED
-	if ( stream != stdout )
+    if (stream != stdout)
 #endif
-		if ( sweep_pos != 0 )
-			fprintf( stream, "%s\n", sweep_buffer );
-	sweep_modified = FALSE;
+        if (sweep_pos != 0)
+            fprintf(stream, "%s\n", sweep_buffer);
+    sweep_modified = FALSE;
 }
 
 
@@ -326,13 +317,13 @@ display_sweep( FILE *stream ) {
  */
 
 void
-reset_buffer_display( void ) {
-	/* The first two Fibonacci numbers */
-	clear_status();
-	clear_sweep();
-	interval1 = 0.0;
-	interval2 = 1.0;
-	last_output = get_real_timer();
+reset_buffer_display(void) {
+    /* The first two Fibonacci numbers */
+    clear_status();
+    clear_sweep();
+    interval1 = 0.0;
+    interval2 = 1.0;
+    last_output = get_real_timer();
 }
 
 
@@ -343,24 +334,24 @@ reset_buffer_display( void ) {
  */
 
 void
-display_buffers( void ) {
-	double timer;
-	double new_interval;
+display_buffers(void) {
+    double timer;
+    double new_interval;
 
-	timer = get_real_timer();
-	if ( (timer - last_output >= interval2) || !timed_buffer_management ) {
-		display_status( stdout, FALSE );
-		status_modified = FALSE;
-		if ( timer - last_output >= interval2 ) {
-			if ( sweep_modified )
-				display_sweep( stdout );
-			last_output = timer;
-			/* Display the sweep at Fibonacci-spaced times */
-			new_interval = interval1 + interval2;
-			interval1 = interval2;
-			interval2 = new_interval;
-		}
-	}
+    timer = get_real_timer();
+    if ((timer - last_output >= interval2) || !timed_buffer_management) {
+        display_status(stdout, FALSE);
+        status_modified = FALSE;
+        if (timer - last_output >= interval2) {
+            if (sweep_modified)
+                display_sweep(stdout);
+            last_output = timer;
+            /* Display the sweep at Fibonacci-spaced times */
+            new_interval = interval1 + interval2;
+            interval1 = interval2;
+            interval2 = new_interval;
+        }
+    }
 }
 
 
@@ -372,8 +363,8 @@ display_buffers( void ) {
  */
 
 void
-toggle_smart_buffer_management( int use_smart ) {
-	timed_buffer_management = use_smart;
+toggle_smart_buffer_management(int use_smart) {
+    timed_buffer_management = use_smart;
 }
 
 
@@ -386,160 +377,159 @@ toggle_smart_buffer_management( int use_smart ) {
  */
 
 char *
-produce_eval_text( EvaluationType eval_info, int short_output ) {
-	char *buffer;
-	double disk_diff;
-	int len;
-	int int_confidence;
+produce_eval_text(EvaluationType eval_info, int short_output) {
+    char *buffer;
+    double disk_diff;
+    int len;
+    int int_confidence;
 
-	// force short output
-	short_output = TRUE;
+    // force short output
+    short_output = TRUE;
 
-	buffer = (char *) safe_malloc( MAX_STRING_LEN );
-	len = 0;
+    buffer = (char *) safe_malloc(MAX_STRING_LEN);
+    len = 0;
 
-	switch ( eval_info.type ) {
-	case MIDGAME_EVAL:
-		if ( eval_info.score >= MIDGAME_WIN )
-			len = sprintf( buffer, WIN_TEXT );
-		else if ( eval_info.score <= -MIDGAME_WIN )
-			len = sprintf( buffer, LOSS_TEXT );
-		else {
-			disk_diff = eval_info.score / 128.0;
-			if ( short_output )
-				len = sprintf( buffer, "%+.2f", disk_diff );
-			else
-				len = sprintf( buffer, "%+.2f %s", disk_diff, DISCS_TEXT );
-		}
-		break;
+    switch (eval_info.type) {
+        case MIDGAME_EVAL:
+            if (eval_info.score >= MIDGAME_WIN)
+                len = sprintf(buffer, WIN_TEXT);
+            else if (eval_info.score <= -MIDGAME_WIN)
+                len = sprintf(buffer, LOSS_TEXT);
+            else {
+                disk_diff = eval_info.score / 128.0;
+                if (short_output)
+                    len = sprintf(buffer, "%+.2f", disk_diff);
+                else
+                    len = sprintf(buffer, "%+.2f %s", disk_diff, DISCS_TEXT);
+            }
+            break;
 
-	case EXACT_EVAL:
-		if ( short_output )
-			len = sprintf( buffer, "%+d", eval_info.score >> 7 );
-		else
-			if ( eval_info.score > 0 )
-				len = sprintf( buffer, "%s %d-%d", WIN_BY_TEXT,
-						32 + (eval_info.score >> 8),
-						32 - (eval_info.score >> 8) );
-			else if ( eval_info.score < 0 )
-				len = sprintf( buffer, "%s %d-%d", LOSS_BY_TEXT,
-						32 - (abs( eval_info.score ) >> 8),
-						32 + (abs( eval_info.score ) >> 8) );
-			else
-				len = sprintf( buffer, DRAW_TEXT );
-		break;
+        case EXACT_EVAL:
+            if (short_output)
+                len = sprintf(buffer, "%+d", eval_info.score >> 7);
+            else if (eval_info.score > 0)
+                len = sprintf(buffer, "%s %d-%d", WIN_BY_TEXT,
+                              32 + (eval_info.score >> 8),
+                              32 - (eval_info.score >> 8));
+            else if (eval_info.score < 0)
+                len = sprintf(buffer, "%s %d-%d", LOSS_BY_TEXT,
+                              32 - (abs(eval_info.score) >> 8),
+                              32 + (abs(eval_info.score) >> 8));
+            else
+                len = sprintf(buffer, DRAW_TEXT);
+            break;
 
-	case WLD_EVAL:
-		if ( short_output )
-			switch ( eval_info.res ) {
+        case WLD_EVAL:
+            if (short_output)
+                switch (eval_info.res) {
 
-			case WON_POSITION:
-				len = sprintf( buffer, WIN_TEXT );
-				break;
+                    case WON_POSITION:
+                        len = sprintf(buffer, WIN_TEXT);
+                        break;
 
-			case DRAWN_POSITION:
-				len = sprintf( buffer, DRAW_TEXT );
-				break;
+                    case DRAWN_POSITION:
+                        len = sprintf(buffer, DRAW_TEXT);
+                        break;
 
-			case LOST_POSITION:
-				len = sprintf( buffer, LOSS_TEXT );
-				break;
+                    case LOST_POSITION:
+                        len = sprintf(buffer, LOSS_TEXT);
+                        break;
 
-			case UNSOLVED_POSITION:
-				len = sprintf( buffer, "???" );
-				break;
-			}
-		else
-			switch ( eval_info.res ) {
+                    case UNSOLVED_POSITION:
+                        len = sprintf(buffer, "???");
+                        break;
+                }
+            else
+                switch (eval_info.res) {
 
-			case WON_POSITION:
-				if ( eval_info.score != +1 * 128 )  /* Lower bound on win */
-					len = sprintf( buffer, "%s %d-%d", WIN_BY_BOUND_TEXT,
-							32 + (eval_info.score >> 8),
-							32 - (eval_info.score >> 8) );
-				else
-					len = sprintf( buffer, WIN_TEXT );
-				break;
+                    case WON_POSITION:
+                        if (eval_info.score != +1 * 128)  /* Lower bound on win */
+                            len = sprintf(buffer, "%s %d-%d", WIN_BY_BOUND_TEXT,
+                                          32 + (eval_info.score >> 8),
+                                          32 - (eval_info.score >> 8));
+                        else
+                            len = sprintf(buffer, WIN_TEXT);
+                        break;
 
-			case DRAWN_POSITION:
-				len = sprintf( buffer, DRAW_TEXT );
-				break;
+                    case DRAWN_POSITION:
+                        len = sprintf(buffer, DRAW_TEXT);
+                        break;
 
-			case LOST_POSITION:
-				if ( eval_info.score != -1 * 128 )  /* Upper bound on win */
-					len = sprintf( buffer, "%s %d-%d", LOSS_BY_BOUND_TEXT,
-							32 - (abs( eval_info.score ) >> 8),
-							32 + (abs( eval_info.score ) >> 8) );
-				else
-					len = sprintf( buffer, LOSS_TEXT );
-				break;
+                    case LOST_POSITION:
+                        if (eval_info.score != -1 * 128)  /* Upper bound on win */
+                            len = sprintf(buffer, "%s %d-%d", LOSS_BY_BOUND_TEXT,
+                                          32 - (abs(eval_info.score) >> 8),
+                                          32 + (abs(eval_info.score) >> 8));
+                        else
+                            len = sprintf(buffer, LOSS_TEXT);
+                        break;
 
-			case UNSOLVED_POSITION:
-				len = sprintf( buffer, "???" );
-				break;
-			}
-		break;
+                    case UNSOLVED_POSITION:
+                        len = sprintf(buffer, "???");
+                        break;
+                }
+            break;
 
-			case SELECTIVE_EVAL:
-				int_confidence = (int)  floor( eval_info.confidence * 100.0 );
-				switch ( eval_info.res ) {
-				case WON_POSITION:
-					if ( eval_info.score != +1 * 128 )
-						len = sprintf( buffer, "%+d @ %d%%", eval_info.score / 128,
-								int_confidence );
-					else
-						len = sprintf( buffer, "%s @ %d%%", WIN_TEXT, int_confidence );
-					break;
-				case DRAWN_POSITION:
-					len = sprintf( buffer, "%s @ %d%%", DRAW_TEXT, int_confidence );
-					break;
-				case LOST_POSITION:
-					if ( eval_info.score != -1 * 128 )
-						len = sprintf( buffer, "%+d @ %d%%", eval_info.score >> 7,
-								int_confidence );
-					else
-						len = sprintf( buffer, "%s @ %d%%", LOSS_TEXT, int_confidence );
-					break;
-				case UNSOLVED_POSITION:
-					if ( eval_info.score == 0 )
-						len = sprintf( buffer, "Draw @ %d%%", int_confidence );
-					else
-						len = sprintf( buffer, "%+d @ %d%%", eval_info.score / 128,
-								int_confidence );
-					break;
-				}
-				break;
+        case SELECTIVE_EVAL:
+            int_confidence = (int) floor(eval_info.confidence * 100.0);
+            switch (eval_info.res) {
+                case WON_POSITION:
+                    if (eval_info.score != +1 * 128)
+                        len = sprintf(buffer, "%+d @ %d%%", eval_info.score / 128,
+                                      int_confidence);
+                    else
+                        len = sprintf(buffer, "%s @ %d%%", WIN_TEXT, int_confidence);
+                    break;
+                case DRAWN_POSITION:
+                    len = sprintf(buffer, "%s @ %d%%", DRAW_TEXT, int_confidence);
+                    break;
+                case LOST_POSITION:
+                    if (eval_info.score != -1 * 128)
+                        len = sprintf(buffer, "%+d @ %d%%", eval_info.score >> 7,
+                                      int_confidence);
+                    else
+                        len = sprintf(buffer, "%s @ %d%%", LOSS_TEXT, int_confidence);
+                    break;
+                case UNSOLVED_POSITION:
+                    if (eval_info.score == 0)
+                        len = sprintf(buffer, "Draw @ %d%%", int_confidence);
+                    else
+                        len = sprintf(buffer, "%+d @ %d%%", eval_info.score / 128,
+                                      int_confidence);
+                    break;
+            }
+            break;
 
-				case FORCED_EVAL:
-					if ( short_output )
-						len = sprintf( buffer, "-" );
-					else
-						len = sprintf( buffer, FORCED_TEXT );
-					break;
+        case FORCED_EVAL:
+            if (short_output)
+                len = sprintf(buffer, "-");
+            else
+                len = sprintf(buffer, FORCED_TEXT);
+            break;
 
-				case PASS_EVAL:
-					if ( short_output )
-						len = sprintf( buffer, "-" );
-					else
-						len = sprintf( buffer, PASS_TEXT );
-					break;
+        case PASS_EVAL:
+            if (short_output)
+                len = sprintf(buffer, "-");
+            else
+                len = sprintf(buffer, PASS_TEXT);
+            break;
 
-				case INTERRUPTED_EVAL:
-					len = sprintf( buffer, INCOMPLETE_TEXT );
-					break;
+        case INTERRUPTED_EVAL:
+            len = sprintf(buffer, INCOMPLETE_TEXT);
+            break;
 
-				case UNDEFINED_EVAL:
-					/* We really want to perform len = sprintf( buffer, "" ); */
-					buffer[0] = 0;
-					len = 0;
-					break;
+        case UNDEFINED_EVAL:
+            /* We really want to perform len = sprintf( buffer, "" ); */
+            buffer[0] = 0;
+            len = 0;
+            break;
 
-				case UNINITIALIZED_EVAL:
-					len = sprintf( buffer, "--" );
-					break;
-	}
-	if ( !short_output && eval_info.is_book )
-		len += sprintf( buffer + len, " (%s)", BOOK_TEXT );
+        case UNINITIALIZED_EVAL:
+            len = sprintf(buffer, "--");
+            break;
+    }
+    if (!short_output && eval_info.is_book)
+        len += sprintf(buffer + len, " (%s)", BOOK_TEXT);
 
-	return buffer;
+    return buffer;
 }

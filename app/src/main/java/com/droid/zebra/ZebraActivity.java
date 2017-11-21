@@ -15,7 +15,7 @@
 	along with DroidZebra.  If not, see <http://www.gnu.org/licenses/>
 */
 
-package com.shurik.droidzebra;
+package com.droid.zebra;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -45,9 +45,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.shurik.droidzebra.ZebraEngine.CandidateMove;
-import com.shurik.droidzebra.ZebraEngine.Move;
-import com.shurik.droidzebra.ZebraEngine.PlayerInfo;
+import com.droid.zebra.ZebraEngine.CandidateMove;
+import com.droid.zebra.ZebraEngine.Move;
+import com.droid.zebra.ZebraEngine.PlayerInfo;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -293,7 +293,9 @@ public class ZebraActivity extends FragmentActivity
                     savedInstanceState.getByteArray("moves_played"));
         }
         /*else {
-            //byte[] init = {56,66,65,46,35,64,47,34,33,36,57,24,43,25,37,23,63,26,16,15,14,13,12,53, 52, 62, 75, 41, 42, 74, 51, 31, 32, 61, 83, 84, 73, 82, 17, 21, 72, 68, 58, 85, 76, 67, 86, 87, 78, 38, 48, 88, 27, 77 };
+            //byte[] init = {56,66,65,46,35,64,47,34,33,36,57,24,43,25,37,23,63,26,16,15,14,13,12,
+            53, 52, 62, 75, 41, 42, 74, 51, 31, 32, 61, 83, 84, 73, 82, 17, 21, 72, 68, 58, 85,
+            76, 67, 86, 87, 78, 38, 48, 88, 27, 77 };
 			byte[] init = {
 					65 , 46 , 35 , 64 , 53 , 36 , 56 , 24 , 27 , 34 , 26 , 43 , 33 , 25 , 47 , 18 ,
 					15 , 14 , 37 , 16 , 17 , 62 , 23 , 52 , 13 , 66 , 74 , 12 , 63 , 42 , 32 , 41 ,
@@ -311,9 +313,7 @@ public class ZebraActivity extends FragmentActivity
                     @Override
                     public void run() {
                         ZebraActivity.this.setContentView(R.layout.board_layout);
-                        if (android.os.Build.VERSION.SDK_INT >= 11) {
-                            new ActionBarHelper().show();
-                        }
+                        new ActionBarHelper().show();
                         ZebraActivity.this.mBoardView = (BoardView) ZebraActivity.this.findViewById(R.id.board);
                         ZebraActivity.this.mStatusView = (StatusView) ZebraActivity.this.findViewById(R.id.status_panel);
                         ZebraActivity.this.mBoardView.setDroidZebra(ZebraActivity.this);

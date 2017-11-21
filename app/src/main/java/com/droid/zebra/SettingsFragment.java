@@ -1,4 +1,4 @@
-package com.shurik.droidzebra;
+package com.droid.zebra;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;

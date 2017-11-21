@@ -1,4 +1,4 @@
-package com.shurik.droidzebra;
+package com.droid.zebra;
 
 import android.app.Activity;
 import android.content.Context;

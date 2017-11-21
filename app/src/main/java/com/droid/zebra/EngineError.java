@@ -15,18 +15,24 @@
     along with DroidZebra.  If not, see <http://www.gnu.org/licenses/>
 */
 
-package com.shurik.droidzebra;
+package com.droid.zebra;
 
-import android.app.Activity;
-import android.os.Bundle;
+public class EngineError extends Exception {
 
+    private static final long serialVersionUID = 1878908185661232307L;
+    String msg;
 
-public class SettingsActivity extends Activity {
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
+    public EngineError() {
+        super();             // call superclass constructor
+        msg = "unknown";
     }
 
+    public EngineError(String err) {
+        super(err);     // call super class constructor
+        msg = err;  // save message
+    }
+
+    public String getError() {
+        return msg;
+    }
 }

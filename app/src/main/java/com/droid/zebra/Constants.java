@@ -1,4 +1,4 @@
-package com.shurik.droidzebra;
+package com.droid.zebra;
 
 /**
  * Created by huzongyao on 16-7-4.

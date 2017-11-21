@@ -43,26 +43,26 @@
 #define UI_EVENT_REDO  4
 
 typedef struct {
-	int type;
-	union {
-		struct {
-			int move;
-		} evt_move;
-	};
+    int type;
+    union {
+        struct {
+            int move;
+        } evt_move;
+    };
 } ui_event_t;
 
 void
 droidzebra_msg_board(
-	int *board,
-	int side_to_move,
-	double black_eval,
-	double white_eval,
-	int black_time,
-	int white_time
+        int *board,
+        int side_to_move,
+        double black_eval,
+        double white_eval,
+        int black_time,
+        int white_time
 );
 
 int
-droidzebra_msg_get_user_input( int side_to_move, ui_event_t* ui_event );
+droidzebra_msg_get_user_input(int side_to_move, ui_event_t *ui_event);
 
 void
 droidzebra_msg_candidate_moves(void);
@@ -71,7 +71,7 @@ void
 droidzebra_msg_pass(void);
 
 void
-droidzebra_msg_opening_name(const char* opening_name);
+droidzebra_msg_opening_name(const char *opening_name);
 
 void
 droidzebra_msg_last_move(int move);

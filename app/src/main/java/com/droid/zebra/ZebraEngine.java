@@ -15,7 +15,7 @@
 	along with DroidZebra.  If not, see <http://www.gnu.org/licenses/>
 */
 
-package com.shurik.droidzebra;
+package com.droid.zebra;
 
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -33,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Locale;
 //import android.util.Log;
 
 // DroidZebra -> ZebraEngine:public -async-> ZebraEngine thread(jni) -> Callback() -async-> DroidZebra:Handler
@@ -92,18 +93,18 @@ public class ZebraEngine extends Thread {
     private int mMoveDelay = 0;
     private long mMoveStartTime = 0; //ms
 
-    ;
+
     private int mMovesWithoutInput = 0;
 
-    ;
+
     private GameState mInitialGameState;
 
-    ;
+
     private GameState mCurrentGameState;
     // current move
     private JSONObject mPendingEvent = null;
 
-    ;
+
     private int mValidMoves[] = null;
     // player info
     private PlayerInfo[] mPlayerInfo = {
@@ -142,8 +143,8 @@ public class ZebraEngine extends Thread {
 
         // if not - try external folder
         try {
-            if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
-                File extDir = new File(android.os.Environment.getExternalStorageDirectory(), "/DroidZebra/files/");
+            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                File extDir = new File(Environment.getExternalStorageDirectory(), "/DroidZebra/files/");
                 _prepareZebraFolder(extDir); //may throw
                 mFilesDir = extDir;
             }
@@ -355,11 +356,10 @@ public class ZebraEngine extends Thread {
     }
 
     public void setPlayerInfo(PlayerInfo playerInfo) throws EngineError {
-        if (playerInfo.playerColor != PLAYER_BLACK && playerInfo.playerColor != PLAYER_WHITE && playerInfo.playerColor != PLAYER_ZEBRA)
-            throw new EngineError(String.format("Invalid player type %d", playerInfo.playerColor));
-
+        if (playerInfo.playerColor != PLAYER_BLACK && playerInfo.playerColor != PLAYER_WHITE
+                && playerInfo.playerColor != PLAYER_ZEBRA)
+            throw new EngineError(String.format(Locale.getDefault(), "Invalid player type %d", playerInfo.playerColor));
         mPlayerInfo[playerInfo.playerColor] = playerInfo;
-
         mPlayerInfoChanged = true;
     }
 
@@ -396,14 +396,10 @@ public class ZebraEngine extends Thread {
             zeSetPlayerInfo(PLAYER_BLACK, 0, 0, 0, INFINIT_TIME, 0);
             zeSetPlayerInfo(PLAYER_WHITE, 0, 0, 0, INFINIT_TIME, 0);
         }
-
         setEngineState(ES_READY2PLAY);
-
         while (mRun) {
             waitForEngineState(ES_PLAY);
-
             if (!mRun) break; // something may have happened while we were waiting
-
             setEngineState(ES_PLAYINPROGRESS);
 
             synchronized (mJNILock) {
@@ -431,16 +427,13 @@ public class ZebraEngine extends Thread {
                         mPlayerInfo[PLAYER_ZEBRA].playerTime,
                         mPlayerInfo[PLAYER_ZEBRA].playerTimeIncrement
                 );
-
                 mCurrentGameState = new GameState();
                 mCurrentGameState.mDisksPlayed = 0;
                 mCurrentGameState.mMoveSequence = new byte[2 * BOARD_SIZE * BOARD_SIZE];
-
                 if (mInitialGameState != null)
                     zePlay(mInitialGameState.mDisksPlayed, mInitialGameState.mMoveSequence);
                 else
                     zePlay(0, null);
-
                 mInitialGameState = null;
             }
 
@@ -514,7 +507,7 @@ public class ZebraEngine extends Thread {
                         zeArray = info.getJSONArray("moves");
                         len = zeArray.length();
                         moves = new byte[len];
-                        assert (2 * len <= mCurrentGameState.mMoveSequence.length);
+                        //assert (2 * len <= mCurrentGameState.mMoveSequence.length);
                         for (int i = 0; i < len; i++) {
                             moves[i] = (byte) zeArray.getInt(i);
                             mCurrentGameState.mMoveSequence[2 * i] = moves[i];
@@ -535,7 +528,7 @@ public class ZebraEngine extends Thread {
                         zeArray = info.getJSONArray("moves");
                         len = zeArray.length();
                         moves = new byte[len];
-                        assert ((2 * len + 1) <= mCurrentGameState.mMoveSequence.length);
+                        //assert ((2 * len + 1) <= mCurrentGameState.mMoveSequence.length);
                         for (int i = 0; i < len; i++) {
                             moves[i] = (byte) zeArray.getInt(i);
                             mCurrentGameState.mMoveSequence[2 * i + 1] = moves[i];
@@ -543,7 +536,6 @@ public class ZebraEngine extends Thread {
                         white.putByteArray("moves", moves);
                         b.putBundle("white", white);
                     }
-
                     mHandler.sendMessage(msg);
                 }
                 break;
@@ -564,20 +556,14 @@ public class ZebraEngine extends Thread {
 
                 case MSG_GET_USER_INPUT: {
                     mMovesWithoutInput = 0;
-
                     setEngineState(ES_USER_INPUT_WAIT);
-
                     waitForEngineState(ES_PLAY);
-
                     while (mPendingEvent == null) {
                         setEngineState(ES_USER_INPUT_WAIT);
                         waitForEngineState(ES_PLAY);
                     }
-
                     retval = mPendingEvent;
-
                     setEngineState(ES_PLAYINPROGRESS);
-
                     mValidMoves = null;
                     mPendingEvent = null;
                 }
@@ -698,12 +684,12 @@ public class ZebraEngine extends Thread {
                     }
                     msg.obj = cmoves;
                     mHandler.sendMessage(msg);
-
                 }
                 break;
 
                 default: {
-                    b.putString("error", String.format("Unkown message ID %d", msgcode));
+                    b.putString("error", String.format(Locale.getDefault(),
+                            "Unkown message ID %d", msgcode));
                     msg.setData(b);
                     mHandler.sendMessage(msg);
                 }
@@ -727,7 +713,6 @@ public class ZebraEngine extends Thread {
     public boolean isValidMove(Move move) {
         if (mValidMoves == null)
             return false;
-
         boolean valid = false;
         for (int m : mValidMoves)
             if (m == move.mMove) {
@@ -752,13 +737,10 @@ public class ZebraEngine extends Thread {
         File pattern = new File(dir, PATTERNS_FILE);
         File book = new File(dir, BOOK_FILE);
         File bookCompressed = new File(dir, BOOK_FILE_COMPRESSED);
-
         if (pattern.exists() && book.exists())
             return;
-
         if (!dir.exists() && !dir.mkdirs())
             throw new IOException(String.format("Unable to create %s", dir));
-
         try {
             _asset2File(coeffAssets, pattern);
             _asset2File(bookCompressedAssets, bookCompressed);
@@ -807,7 +789,6 @@ public class ZebraEngine extends Thread {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
     }
 
     // JNI
@@ -819,14 +800,8 @@ public class ZebraEngine extends Thread {
 
     private native void zeForceExit();
 
-    private native void zeSetPlayerInfo(
-            int player,
-            int skill,
-            int exactSkill,
-            int wldSkill,
-            int time,
-            int timeIncrement
-    );
+    private native void zeSetPlayerInfo(int player, int skill, int exactSkill, int wldSkill,
+                                        int time, int timeIncrement);
 
     private native void zePlay(int providedMoveCount, byte[] providedMoves);
 
@@ -856,15 +831,15 @@ public class ZebraEngine extends Thread {
         public int wldSolvingSkill;
         public int playerTime;
         public int playerTimeIncrement;
+
         public PlayerInfo(int _player, int _skill, int _exact_skill, int _wld_skill, int _player_time, int _increment) {
-            assert (_player == PLAYER_BLACK || _player == PLAYER_WHITE || _player == PLAYER_ZEBRA);
+            //assert (_player == PLAYER_BLACK || _player == PLAYER_WHITE || _player == PLAYER_ZEBRA);
             playerColor = _player;
             skill = _skill;
             exactSolvingSkill = _exact_skill;
             wldSolvingSkill = _wld_skill;
             playerTime = _player_time;
             playerTimeIncrement = _increment;
-
         }
     }
 

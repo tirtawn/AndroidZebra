@@ -15,7 +15,7 @@
 	along with DroidZebra.  If not, see <http://www.gnu.org/licenses/>
 */
 
-package com.shurik.droidzebra;
+package com.droid.zebra;
 
 import android.content.Context;
 import android.graphics.Canvas;

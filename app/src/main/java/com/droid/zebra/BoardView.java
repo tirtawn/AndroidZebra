@@ -14,7 +14,7 @@
 	You should have received a copy of the GNU General Public License
 	along with DroidZebra.  If not, see <http://www.gnu.org/licenses/>
 */
-package com.shurik.droidzebra;
+package com.droid.zebra;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -36,9 +36,9 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.shurik.droidzebra.ZebraEngine.CandidateMove;
-import com.shurik.droidzebra.ZebraEngine.InvalidMove;
-import com.shurik.droidzebra.ZebraEngine.Move;
+import com.droid.zebra.ZebraEngine.CandidateMove;
+import com.droid.zebra.ZebraEngine.InvalidMove;
+import com.droid.zebra.ZebraEngine.Move;
 //import android.util.Log;
 
 public class BoardView extends View {

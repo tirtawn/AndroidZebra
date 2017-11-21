@@ -4,7 +4,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <com.shurik.droidzebra.BoardView
+    <com.droid.zebra.BoardView
         android:id="@+id/board"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -24,7 +24,7 @@
 
         <view
             android:id="@+id/status_panel"
-            class="com.shurik.droidzebra.StatusView"
+            class="com.droid.zebra.StatusView"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:background="@color/board_color"

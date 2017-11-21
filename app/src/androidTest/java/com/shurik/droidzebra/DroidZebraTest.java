@@ -2,6 +2,8 @@ package com.shurik.droidzebra;
 
 import android.test.ActivityInstrumentationTestCase2;
 
+import com.droid.zebra.ZebraActivity;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
