@@ -148,7 +148,7 @@ public class StatusView extends View {
     }
 
     public void clear() {
-        String blank = new String();
+        String blank = "";
         setTextForID(ID_SCORE_BLACK, blank);
         setTextForID(ID_SCORE_WHITE, blank);
         setTextForID(ID_SCORELINE_NUM_1, "1");

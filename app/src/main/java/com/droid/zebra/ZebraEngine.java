@@ -120,7 +120,7 @@ public class ZebraEngine extends Thread {
     private Handler mHandler;
     // files folder
     private File mFilesDir;
-    private Object mEngineStateEvent = new Object();
+    private final Object mEngineStateEvent = new Object();
     private int mEngineState = ES_INITIAL;
     private boolean mRun = false;
     private boolean bInCallback = false;
@@ -144,7 +144,7 @@ public class ZebraEngine extends Thread {
         // if not - try external folder
         try {
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-                File extDir = new File(Environment.getExternalStorageDirectory(), "/DroidZebra/files/");
+                File extDir = mContext.getExternalFilesDir(null);
                 _prepareZebraFolder(extDir); //may throw
                 mFilesDir = extDir;
             }
