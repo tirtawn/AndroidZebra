@@ -680,11 +680,11 @@ public class ZebraActivity extends AppCompatActivity
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-//            try {
-//                mZebraThread.undoMove();
-//            } catch (EngineError e) {
-//                FatalError(e.msg);
-//            }
+            /*try {
+                mZebraThread.undoMove();
+            } catch (EngineError e) {
+                FatalError(e.msg);
+            }*/
             showQuitDialog();
             return true;
         }
@@ -811,6 +811,7 @@ public class ZebraActivity extends AppCompatActivity
             return (ZebraActivity) getActivity();
         }
 
+        @SuppressLint("DefaultLocale")
         public void refreshContent(View dialog) {
             int winner;
             int blackScore = getDroidZebra().mBlackScore;
@@ -822,7 +823,8 @@ public class ZebraActivity extends AppCompatActivity
             else
                 winner = R.string.gameover_text_draw;
             ((TextView) dialog.findViewById(R.id.gameover_text)).setText(winner);
-            ((TextView) dialog.findViewById(R.id.gameover_score)).setText(String.format("%d : %d", blackScore, whiteScore));
+            ((TextView) dialog.findViewById(R.id.gameover_score))
+                    .setText(String.format("%d : %d", blackScore, whiteScore));
         }
 
         @Override
@@ -877,9 +879,7 @@ public class ZebraActivity extends AppCompatActivity
                             getDroidZebra().sendMail();
                         }
                     });
-
             refreshContent(v);
-
             return v;
         }
 
